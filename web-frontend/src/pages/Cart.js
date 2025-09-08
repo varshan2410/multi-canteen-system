@@ -3,12 +3,11 @@ import { Container, Typography } from '@mui/material';
 
 const Cart = () => {
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h5">Cart</Typography>
+    <Container>
+      <Typography variant="h4">Shopping Cart</Typography>
+      <Typography>Cart page coming soon...</Typography>
     </Container>
   );
 };
 
 export default Cart;
-
-

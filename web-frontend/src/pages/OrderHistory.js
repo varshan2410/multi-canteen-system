@@ -3,12 +3,11 @@ import { Container, Typography } from '@mui/material';
 
 const OrderHistory = () => {
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h5">Order History</Typography>
+    <Container>
+      <Typography variant="h4">Order History</Typography>
+      <Typography>Order history coming soon...</Typography>
     </Container>
   );
 };
 
 export default OrderHistory;
-
-

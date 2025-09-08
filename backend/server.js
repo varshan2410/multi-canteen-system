@@ -27,8 +27,8 @@ const DB_CONFIG = {
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 5432,
   database: process.env.DB_NAME || 'multi_canteen_db',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'password',
+  user: process.env.DB_USER || 'varshan24',
+  password: process.env.DB_PASSWORD || '24102002',
 };
 
 // Initialize PostgreSQL connection

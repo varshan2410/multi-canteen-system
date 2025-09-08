@@ -3,12 +3,11 @@ import { Container, Typography } from '@mui/material';
 
 const CanteenMenu = () => {
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h5">Canteen Menu</Typography>
+    <Container>
+      <Typography variant="h4">Canteen Menu</Typography>
+      <Typography>Menu page coming soon...</Typography>
     </Container>
   );
 };
 
 export default CanteenMenu;
-
-

@@ -3,12 +3,11 @@ import { Container, Typography } from '@mui/material';
 
 const SuperAdminDashboard = () => {
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h5">Super Admin Dashboard</Typography>
+    <Container>
+      <Typography variant="h4">Super Admin Dashboard</Typography>
+      <Typography>Super admin dashboard coming soon...</Typography>
     </Container>
   );
 };
 
 export default SuperAdminDashboard;
-
-

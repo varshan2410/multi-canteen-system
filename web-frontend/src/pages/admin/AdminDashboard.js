@@ -3,12 +3,11 @@ import { Container, Typography } from '@mui/material';
 
 const AdminDashboard = () => {
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h5">Admin Dashboard</Typography>
+    <Container>
+      <Typography variant="h4">Admin Dashboard</Typography>
+      <Typography>Admin dashboard coming soon...</Typography>
     </Container>
   );
 };
 
 export default AdminDashboard;
-
-
