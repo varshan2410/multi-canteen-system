@@ -65,6 +65,16 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+// Role-based authorization middleware
+const authorize = (roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
+    next();
+  };
+};
+
 // Socket.IO connection handling
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
@@ -381,4 +391,177 @@ app.use('*', (req, res) => {
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log('Socket.IO server ready for connections');
+});
+
+// MENU MANAGEMENT ROUTES (Canteen Admin only)
+
+// Get canteen for admin
+app.get('/api/admin/my-canteen', authenticateToken, authorize(['canteen_admin']), async (req, res) => {
+  try {
+    const result = await db.query(
+      'SELECT * FROM canteens WHERE admin_id = $1',
+      [req.user.userId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No canteen assigned to this admin' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Get admin canteen error:', error);
+    res.status(500).json({ error: 'Failed to get canteen' });
+  }
+});
+
+// Get menu categories for admin's canteen
+app.get('/api/admin/menu-categories', authenticateToken, authorize(['canteen_admin']), async (req, res) => {
+  try {
+    // First get admin's canteen
+    const canteenResult = await db.query(
+      'SELECT id FROM canteens WHERE admin_id = $1',
+      [req.user.userId]
+    );
+    
+    if (canteenResult.rows.length === 0) {
+      return res.status(404).json({ error: 'No canteen found' });
+    }
+    
+    const canteenId = canteenResult.rows[0].id;
+    
+    const result = await db.query(
+      'SELECT * FROM menu_categories WHERE canteen_id = $1 ORDER BY sort_order, name',
+      [canteenId]
+    );
+    
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Get categories error:', error);
+    res.status(500).json({ error: 'Failed to get categories' });
+  }
+});
+
+// Add menu item
+app.post('/api/admin/menu-items', authenticateToken, authorize(['canteen_admin']), async (req, res) => {
+  try {
+    // Get admin's canteen
+    const canteenResult = await db.query(
+      'SELECT id FROM canteens WHERE admin_id = $1',
+      [req.user.userId]
+    );
+    
+    if (canteenResult.rows.length === 0) {
+      return res.status(404).json({ error: 'No canteen found' });
+    }
+    
+    const canteenId = canteenResult.rows[0].id;
+    const { categoryId, name, description, price, isVegetarian, isVegan, preparationTime } = req.body;
+    
+    const result = await db.query(`
+      INSERT INTO menu_items (canteen_id, category_id, name, description, price, is_vegetarian, is_vegan, preparation_time)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *
+    `, [canteenId, categoryId, name, description, price, isVegetarian, isVegan, preparationTime]);
+    
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Create menu item error:', error);
+    res.status(500).json({ error: 'Failed to create menu item' });
+  }
+});
+
+// Update menu item
+app.put('/api/admin/menu-items/:id', authenticateToken, authorize(['canteen_admin']), async (req, res) => {
+  try {
+    // Get admin's canteen
+    const canteenResult = await db.query(
+      'SELECT id FROM canteens WHERE admin_id = $1',
+      [req.user.userId]
+    );
+    
+    if (canteenResult.rows.length === 0) {
+      return res.status(404).json({ error: 'No canteen found' });
+    }
+    
+    const canteenId = canteenResult.rows[0].id;
+    const itemId = req.params.id;
+    const { name, description, price, isAvailable, isVegetarian, isVegan, preparationTime } = req.body;
+    
+    const result = await db.query(`
+      UPDATE menu_items 
+      SET name = $1, description = $2, price = $3, is_available = $4, 
+          is_vegetarian = $5, is_vegan = $6, preparation_time = $7, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $8 AND canteen_id = $9 RETURNING *
+    `, [name, description, price, isAvailable, isVegetarian, isVegan, preparationTime, itemId, canteenId]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Menu item not found' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Update menu item error:', error);
+    res.status(500).json({ error: 'Failed to update menu item' });
+  }
+});
+
+// Delete menu item
+app.delete('/api/admin/menu-items/:id', authenticateToken, authorize(['canteen_admin']), async (req, res) => {
+  try {
+    // Get admin's canteen
+    const canteenResult = await db.query(
+      'SELECT id FROM canteens WHERE admin_id = $1',
+      [req.user.userId]
+    );
+    
+    if (canteenResult.rows.length === 0) {
+      return res.status(404).json({ error: 'No canteen found' });
+    }
+    
+    const canteenId = canteenResult.rows[0].id;
+    const itemId = req.params.id;
+    
+    const result = await db.query(
+      'DELETE FROM menu_items WHERE id = $1 AND canteen_id = $2 RETURNING *',
+      [itemId, canteenId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Menu item not found' });
+    }
+    
+    res.json({ message: 'Menu item deleted successfully' });
+  } catch (error) {
+    console.error('Delete menu item error:', error);
+    res.status(500).json({ error: 'Failed to delete menu item' });
+  }
+});
+
+// Get menu items for admin's canteen
+app.get('/api/admin/menu-items', authenticateToken, authorize(['canteen_admin']), async (req, res) => {
+  try {
+    // Get admin's canteen
+    const canteenResult = await db.query(
+      'SELECT id FROM canteens WHERE admin_id = $1',
+      [req.user.userId]
+    );
+    
+    if (canteenResult.rows.length === 0) {
+      return res.status(404).json({ error: 'No canteen found' });
+    }
+    
+    const canteenId = canteenResult.rows[0].id;
+    
+    const result = await db.query(`
+      SELECT mi.*, mc.name as category_name 
+      FROM menu_items mi
+      JOIN menu_categories mc ON mi.category_id = mc.id
+      WHERE mi.canteen_id = $1
+      ORDER BY mc.sort_order, mi.name
+    `, [canteenId]);
+    
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Get menu items error:', error);
+    res.status(500).json({ error: 'Failed to get menu items' });
+  }
 });

@@ -6,6 +6,7 @@ import { CssBaseline, Box } from '@mui/material';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { SocketProvider } from './contexts/SocketContext';
+import MenuManagement from './pages/admin/MenuManagement';
 
 // Components
 import Navbar from './components/Navbar';
@@ -114,6 +115,14 @@ function App() {
                         element={
                           <ProtectedRoute allowedRoles={['super_admin']}>
                             <SuperAdminDashboard />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/menu" 
+                        element={
+                          <ProtectedRoute allowedRoles={['canteen_admin']}>
+                            <MenuManagement />
                           </ProtectedRoute>
                         } 
                       />

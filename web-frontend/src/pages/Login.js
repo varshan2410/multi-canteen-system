@@ -7,7 +7,8 @@ import {
   Typography,
   Box,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Grid
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -43,13 +44,23 @@ const Login = () => {
     
     const credentials = {
       admin: { email: 'admin@admin.com', password: 'password' },
-      student: { email: 'student@test.com', password: 'password' }
+      student: { email: 'student@test.com', password: 'password' },
+      'north-canteen': { email: 'north-admin@admin.com', password: 'password' },
+      'south-canteen': { email: 'south-admin@admin.com', password: 'password' },
+      'fastfood': { email: 'fastfood-admin@admin.com', password: 'password' }
     };
 
     const result = await login(credentials[userType].email, credentials[userType].password);
     
     if (result.success) {
-      navigate('/dashboard');
+      // Redirect based on role
+      if (result.user.role === 'super_admin') {
+        navigate('/super-admin');
+      } else if (result.user.role === 'canteen_admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } else {
       setError(result.error);
     }
@@ -72,24 +83,63 @@ const Login = () => {
             <Typography variant="subtitle2" align="center" gutterBottom>
               Quick Login (for testing):
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-              <Button 
-                variant="outlined" 
-                size="small" 
-                onClick={() => quickLogin('admin')}
-                disabled={loading}
-              >
-                Login as Admin
-              </Button>
-              <Button 
-                variant="outlined" 
-                size="small" 
-                onClick={() => quickLogin('student')}
-                disabled={loading}
-              >
-                Login as Student
-              </Button>
-            </Box>
+            <Grid container spacing={1}>
+              <Grid item xs={6}>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  fullWidth
+                  onClick={() => quickLogin('admin')}
+                  disabled={loading}
+                >
+                  Super Admin
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  fullWidth
+                  onClick={() => quickLogin('student')}
+                  disabled={loading}
+                >
+                  Student
+                </Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  fullWidth
+                  onClick={() => quickLogin('north-canteen')}
+                  disabled={loading}
+                >
+                  North Canteen
+                </Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  fullWidth
+                  onClick={() => quickLogin('south-canteen')}
+                  disabled={loading}
+                >
+                  South Canteen
+                </Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  fullWidth
+                  onClick={() => quickLogin('fastfood')}
+                  disabled={loading}
+                >
+                  Fast Food
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
           
           <Box component="form" onSubmit={handleSubmit}>

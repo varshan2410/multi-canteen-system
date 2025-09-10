@@ -1,5 +1,5 @@
 -- Users table (students, canteen admins, super admins)
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE users (
 );
 
 -- Canteens table
-CREATE TABLE canteens (
+CREATE TABLE IF NOT EXISTS canteens (
     id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -29,8 +29,9 @@ CREATE TABLE canteens (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- Menu categories
-CREATE TABLE menu_categories (
+CREATE TABLE IF NOT EXISTS menu_categories (
     id SERIAL PRIMARY KEY,
     canteen_id INTEGER REFERENCES canteens(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
@@ -40,8 +41,9 @@ CREATE TABLE menu_categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- Menu items
-CREATE TABLE menu_items (
+CREATE TABLE IF NOT EXISTS menu_items (
     id SERIAL PRIMARY KEY,
     canteen_id INTEGER REFERENCES canteens(id) ON DELETE CASCADE,
     category_id INTEGER REFERENCES menu_categories(id),
@@ -60,8 +62,9 @@ CREATE TABLE menu_items (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- Orders
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
     order_number VARCHAR(50) UNIQUE NOT NULL,
     user_id INTEGER REFERENCES users(id),
@@ -77,7 +80,7 @@ CREATE TABLE orders (
 );
 
 -- Order items
-CREATE TABLE order_items (
+CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
     menu_item_id INTEGER REFERENCES menu_items(id),
@@ -89,7 +92,7 @@ CREATE TABLE order_items (
 );
 
 -- Reviews and ratings
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
     canteen_id INTEGER REFERENCES canteens(id),
@@ -103,7 +106,7 @@ CREATE TABLE reviews (
 );
 
 -- Notifications
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
     title VARCHAR(200) NOT NULL,

@@ -1,0 +1,16 @@
+{
+  "name": "multi-canteen-system",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "web-frontend",
+    "mobile-app"
+  ],
+  "scripts": {
+    "migrate": "npm --prefix backend run migrate",
+    "backend": "npm --prefix backend start",
+    "backend:dev": "npm --prefix backend run dev",
+    "web": "npm --prefix web-frontend start"
+  }
+}
+
