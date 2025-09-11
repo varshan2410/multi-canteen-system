@@ -140,7 +140,7 @@ const CanteenMenu = () => {
                     <CardMedia
                       component="img"
                       height="200"
-                      image={item.image_url || 'https://via.placeholder.com/300x200?text=Food+Image'}
+                      image={item.image_url || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s'}
                       alt={item.name}
                     />
                     <CardContent sx={{ flexGrow: 1 }}>

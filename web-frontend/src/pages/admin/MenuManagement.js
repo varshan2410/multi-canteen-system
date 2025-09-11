@@ -47,6 +47,7 @@ const MenuManagement = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    imageUrl: '',
     price: '',
     categoryId: '',
     isVegetarian: false,
@@ -121,6 +122,7 @@ const MenuManagement = () => {
       setFormData({
         name: item.name,
         description: item.description || '',
+        imageUrl: item.image_url || '',
         price: item.price,
         categoryId: item.category_id,
         isVegetarian: item.is_vegetarian,
@@ -139,6 +141,7 @@ const MenuManagement = () => {
     setFormData({
       name: '',
       description: '',
+      imageUrl: '',
       price: '',
       categoryId: '',
       isVegetarian: false,
@@ -263,6 +266,26 @@ const MenuManagement = () => {
             onChange={(e) => setFormData({...formData, price: e.target.value})}
             margin="normal"
           />
+
+          <TextField
+            fullWidth
+            label="Image URL (optional)"
+            value={formData.imageUrl}
+            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+            helperText="Leave empty to auto-fill a food photo"
+            margin="normal"
+          />
+
+          {formData.imageUrl && (
+            <Box sx={{ mt: 2 }}>
+              <img
+                src={formData.imageUrl}
+                alt="Preview"
+                style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 8 }}
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            </Box>
+          )}
           
           <FormControl fullWidth margin="normal">
             <InputLabel>Category</InputLabel>

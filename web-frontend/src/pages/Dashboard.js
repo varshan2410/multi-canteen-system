@@ -101,7 +101,7 @@ const Dashboard = () => {
               <CardMedia
                 component="img"
                 height="200"
-                image={canteen.image_url || 'https://via.placeholder.com/300x200?text=Canteen+Image'}
+                image={canteen.image_url || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s'}
                 alt={canteen.name}
               />
               <CardContent sx={{ flexGrow: 1 }}>
