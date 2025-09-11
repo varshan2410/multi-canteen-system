@@ -455,12 +455,17 @@ app.post('/api/admin/menu-items', authenticateToken, authorize(['canteen_admin']
     }
     
     const canteenId = canteenResult.rows[0].id;
-    const { categoryId, name, description, price, isVegetarian, isVegan, preparationTime } = req.body;
+    const { categoryId, name, description, price, isVegetarian, isVegan, preparationTime, imageUrl } = req.body;
+
+    const TEST_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s';
+    const defaultImageUrl = imageUrl && imageUrl.trim().length > 0
+      ? imageUrl.trim()
+      : TEST_IMAGE_URL;
     
     const result = await db.query(`
-      INSERT INTO menu_items (canteen_id, category_id, name, description, price, is_vegetarian, is_vegan, preparation_time)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *
-    `, [canteenId, categoryId, name, description, price, isVegetarian, isVegan, preparationTime]);
+      INSERT INTO menu_items (canteen_id, category_id, name, description, image_url, price, is_vegetarian, is_vegan, preparation_time)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *
+    `, [canteenId, categoryId, name, description, defaultImageUrl, price, isVegetarian, isVegan, preparationTime]);
     
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -484,14 +489,15 @@ app.put('/api/admin/menu-items/:id', authenticateToken, authorize(['canteen_admi
     
     const canteenId = canteenResult.rows[0].id;
     const itemId = req.params.id;
-    const { name, description, price, isAvailable, isVegetarian, isVegan, preparationTime } = req.body;
+    const { name, description, price, isAvailable, isVegetarian, isVegan, preparationTime, imageUrl } = req.body;
+    const TEST_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s';
     
     const result = await db.query(`
       UPDATE menu_items 
-      SET name = $1, description = $2, price = $3, is_available = $4, 
-          is_vegetarian = $5, is_vegan = $6, preparation_time = $7, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $8 AND canteen_id = $9 RETURNING *
-    `, [name, description, price, isAvailable, isVegetarian, isVegan, preparationTime, itemId, canteenId]);
+      SET name = $1, description = $2, image_url = COALESCE($3, image_url), price = $4, is_available = $5, 
+          is_vegetarian = $6, is_vegan = $7, preparation_time = $8, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $9 AND canteen_id = $10 RETURNING *
+    `, [name, description, imageUrl || null, price, isAvailable, isVegetarian, isVegan, preparationTime, itemId, canteenId]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Menu item not found' });

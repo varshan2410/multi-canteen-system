@@ -230,58 +230,64 @@ const runMigrations = async () => {
     `);
     
     await db.query(`
-      INSERT INTO menu_items (canteen_id, category_id, name, description, price, is_vegetarian, preparation_time) VALUES
+      INSERT INTO menu_items (canteen_id, category_id, name, description, image_url, price, is_vegetarian, preparation_time) VALUES
       (
         (SELECT id FROM canteens WHERE name = 'North Canteen'),
         (SELECT id FROM menu_categories WHERE name = 'Main Course' AND canteen_id = (SELECT id FROM canteens WHERE name = 'North Canteen')),
-        'Dal Rice', 'Traditional dal with steamed rice', 60.00, true, 15
+        'Dal Rice', 'Traditional dal with steamed rice', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 60.00, true, 15
       ),
       (
         (SELECT id FROM canteens WHERE name = 'North Canteen'),
         (SELECT id FROM menu_categories WHERE name = 'Main Course' AND canteen_id = (SELECT id FROM canteens WHERE name = 'North Canteen')),
-        'Chicken Curry', 'Spicy chicken curry with rice', 120.00, false, 25
+        'Chicken Curry', 'Spicy chicken curry with rice', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 120.00, false, 25
       ),
       (
         (SELECT id FROM canteens WHERE name = 'North Canteen'),
         (SELECT id FROM menu_categories WHERE name = 'Snacks' AND canteen_id = (SELECT id FROM canteens WHERE name = 'North Canteen')),
-        'Samosa', 'Crispy samosa with chutney', 25.00, true, 10
+        'Samosa', 'Crispy samosa with chutney', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 25.00, true, 10
       ),
       (
         (SELECT id FROM canteens WHERE name = 'North Canteen'),
         (SELECT id FROM menu_categories WHERE name = 'Beverages' AND canteen_id = (SELECT id FROM canteens WHERE name = 'North Canteen')),
-        'Chai', 'Indian spiced tea', 15.00, true, 5
+        'Chai', 'Indian spiced tea', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 15.00, true, 5
       ),
       (
         (SELECT id FROM canteens WHERE name = 'South Canteen'),
         (SELECT id FROM menu_categories WHERE name = 'South Indian' AND canteen_id = (SELECT id FROM canteens WHERE name = 'South Canteen')),
-        'Masala Dosa', 'Crispy dosa with potato filling', 80.00, true, 20
+        'Masala Dosa', 'Crispy dosa with potato filling', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 80.00, true, 20
       ),
       (
         (SELECT id FROM canteens WHERE name = 'South Canteen'),
         (SELECT id FROM menu_categories WHERE name = 'South Indian' AND canteen_id = (SELECT id FROM canteens WHERE name = 'South Canteen')),
-        'Idli Sambhar', 'Steamed idli with sambhar', 50.00, true, 15
+        'Idli Sambhar', 'Steamed idli with sambhar', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 50.00, true, 15
       ),
       (
         (SELECT id FROM canteens WHERE name = 'South Canteen'),
         (SELECT id FROM menu_categories WHERE name = 'Beverages' AND canteen_id = (SELECT id FROM canteens WHERE name = 'South Canteen')),
-        'Filter Coffee', 'Traditional South Indian coffee', 20.00, true, 5
+        'Filter Coffee', 'Traditional South Indian coffee', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 20.00, true, 5
       ),
       (
         (SELECT id FROM canteens WHERE name = 'Fast Food Corner'),
         (SELECT id FROM menu_categories WHERE name = 'Burgers' AND canteen_id = (SELECT id FROM canteens WHERE name = 'Fast Food Corner')),
-        'Veg Burger', 'Vegetarian burger with fries', 90.00, true, 15
+        'Veg Burger', 'Vegetarian burger with fries', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 90.00, true, 15
       ),
       (
         (SELECT id FROM canteens WHERE name = 'Fast Food Corner'),
         (SELECT id FROM menu_categories WHERE name = 'Burgers' AND canteen_id = (SELECT id FROM canteens WHERE name = 'Fast Food Corner')),
-        'Chicken Burger', 'Grilled chicken burger', 130.00, false, 20
+        'Chicken Burger', 'Grilled chicken burger', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 130.00, false, 20
       ),
       (
         (SELECT id FROM canteens WHERE name = 'Fast Food Corner'),
         (SELECT id FROM menu_categories WHERE name = 'Beverages' AND canteen_id = (SELECT id FROM canteens WHERE name = 'Fast Food Corner')),
-        'Chocolate Shake', 'Rich chocolate milkshake', 60.00, true, 5
+        'Chocolate Shake', 'Rich chocolate milkshake', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s', 60.00, true, 5
       )
       ON CONFLICT (category_id, name) DO NOTHING;
+    `);
+
+    // Set all menu item images to the provided test URL for UI testing
+    await db.query(`
+      UPDATE menu_items 
+      SET image_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyDcH_MxdsTsK6KMVon-Ybfa2WiT-R70ZjWw&s';
     `);
 
       // Add canteen admin users (add this after the existing sample data)
